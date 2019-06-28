@@ -117,10 +117,13 @@ def init_seafile_server():
     env = {
         'SERVER_NAME': 'seafile',
         'SERVER_IP': get_conf('SEAFILE_SERVER_HOSTNAME', 'seafile.example.com'),
-        'MYSQL_USER': 'seafile',
-        'MYSQL_USER_PASSWD': str(uuid.uuid4()),
-        'MYSQL_USER_HOST': '%.%.%.%',
-	'MYSQL_HOST': get_conf('DB_HOST','127.0.0.1'),
+        'MYSQL_USER': get_conf('MYSQL_USER', 'seafile'),
+        'MYSQL_USER_PASSWD': get_conf('MYSQL_USER_PASSWORD', str(uuid.uuid4())),
+        'MYSQL_USER_HOST': get_conf('MYSQL_USER_HOST', '127.0.0.1'),
+	    'MYSQL_HOST': get_conf('DB_HOST','127.0.0.1'),
+        'CCNET_DB': get_conf('CCNET_DB','ccnet-db'),
+        'SEAFILE_DB': get_conf('SEAFILE_DB', 'seafile-db'),
+        'SEAHUB_DB': get_conf('SEAHUB_DB', 'seahub-db'),
         # Default MariaDB root user has empty password and can only connect from localhost.
         'MYSQL_ROOT_PASSWD': get_conf('DB_ROOT_PASSWD', ''),
     }
@@ -130,11 +133,11 @@ def init_seafile_server():
     #     .format(get_script('setup-seafile-mysql.py')))
 
     # Change the script to disable check MYSQL_USER_HOST
-    call('''sed -i -e '/def validate_mysql_user_host(self, host)/a \ \ \ \ \ \ \ \ return host' {}'''
-        .format(get_script('setup-seafile-mysql.py')))
+    # call('''sed -i -e '/def validate_mysql_user_host(self, host)/a \ \ \ \ \ \ \ \ return host' {}'''
+    #    .format(get_script('setup-seafile-mysql.py')))
 
-    call('''sed -i -e '/def validate_mysql_host(self, host)/a \ \ \ \ \ \ \ \ return host' {}'''
-        .format(get_script('setup-seafile-mysql.py')))
+    #call('''sed -i -e '/def validate_mysql_host(self, host)/a \ \ \ \ \ \ \ \ return host' {}'''
+    #    .format(get_script('setup-seafile-mysql.py')))
 
     setup_script = get_script('setup-seafile-mysql.sh')
     call('{} auto -n seafile'.format(setup_script), env=env)
